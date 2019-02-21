@@ -41,6 +41,7 @@ void Helper::filecopy(string &source, string &dest){
 }
 
 void Helper::deleteCopies(string source){
+	remove(source.c_str());
 	string s = source+"a";
 	remove(s.c_str());
 	s = source+"b";

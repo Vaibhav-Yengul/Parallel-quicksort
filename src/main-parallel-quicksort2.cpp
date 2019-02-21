@@ -11,7 +11,7 @@
 #include "sortwriter.h"
 #include "helper.h"
 
-void mergeRuns(string fname, vector<int> so, long long numberOfLines){
+void mergeRuns(string fname, vector<int> so, long long numberOfLines, string outputfilename){
 	long bucketSize = MERGELIMIT;
 	//string ext = ".csv";
 	string fileName = "temp";
@@ -22,8 +22,8 @@ void mergeRuns(string fname, vector<int> so, long long numberOfLines){
 
 	SortWriter *sw;
 	while(true){
-		long iterations = numberOfLines / bucketSize;
-		if (iterations == 0)
+		long iterations = (long) ceil(numberOfLines*1.0 / bucketSize);
+		if (iterations == 1)
 			break;
 
 		string fnameA = fname + "a";
@@ -48,16 +48,32 @@ void mergeRuns(string fname, vector<int> so, long long numberOfLines){
 		delete(b2);
 		delete(sw);
 	}
+	Helper::filecopy(opfname, outputfilename);
+	remove(opfname.c_str());
 }
 
 
-int main()
+int main(int argc, char* argv[])
 {
-    CsvReader reader("rankings.csv");
-    CsvWriter writer("r_temp2.csv", true);
+	if(argc<5){
+		cout << "Usage  : ./<executable> input.csv output.csv “{order of indexes}” {no of threads}\m";
+		return 0;
+	}
+	string input(argv[1]);
+	string output(argv[2]);
+	string sortorder(argv[3]);
+	string noOfT(argv[4]);
 
-    vector<int> order {0,1};
-    std::vector<std::vector<string>> v;
+    CsvReader reader(input);
+    CsvWriter writer("r1.csv", true);
+
+    vector<int> order;
+    std::stringstream ss(sortorder);
+	std::string buf;
+	while (getline(ss, buf, ','))
+		order.push_back(stoi(buf));
+
+    vvs v;
     QuickSort sorter(order);
     int j = 1;
     while(reader.hasData()) {
@@ -72,9 +88,10 @@ int main()
     reader.close();
     writer.close();
 
-    mergeRuns("r_temp2.csv", order, reader.getTotalLines());
+    mergeRuns("r1.csv", order, reader.getTotalLines(), output);
 
     cout << "Done";
-    return 0;
+
+	return 0;
 
 }
