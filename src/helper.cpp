@@ -23,11 +23,24 @@ string Helper::joins(const vector<string>& v, char c) {
 
 int Helper::compare(const vector<string> &v1, const vector<string> &v2, const vector<int> &sortOrder){
 	for(int x: sortOrder){
-		if (v1[x].compare(v2[x]) > 0){
-			return 1;
+		if(Helper::is_number(v1[x])){
+			long num1 = stol(v1[x]);
+			long num2 = stol(v2[x]);
+
+			if (num1 > num2){
+				return 1;
+			}
+			else if (num1 < num2){
+				return -1;
+			}
 		}
-		else if (v1[x].compare(v2[x]) < 0){
-			return -1;
+		else{
+			if (v1[x].compare(v2[x]) > 0){
+				return 1;
+			}
+			else if (v1[x].compare(v2[x]) < 0){
+				return -1;
+			}
 		}
 	}
 	return 0;
